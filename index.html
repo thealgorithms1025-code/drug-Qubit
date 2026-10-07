@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="description" content="DoseAlert - Advanced Polypharmacy & Drug-Food Interaction Checker. Real OCR handwriting scanning, multilingual voice warnings, doctor visits dashboard, and chemical composition risk comparator." />
+  <meta name="theme-color" content="#0F766E" />
+  <link rel="icon" type="image/jpeg" href="assets/dosealert_logo.jpg" />
+  <title>DoseAlert | Next-Gen Polypharmacy & Drug Interaction Checker</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit, and Indian Native Scripts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&family=Noto+Sans+Telugu:wght@400;600;700&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tesseract.js for Real Client-Side Browser OCR on Uploaded Prescriptions -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <!-- App Stylesheets -->
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/graph.css" />
+  <link rel="stylesheet" href="styles/doctor.css" />
+</head>
+<body>
+
+  <!-- Ambient Glowing Background Elements -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Top App Navigation Header -->
+  <header class="app-header" role="banner">
+    <!-- Brand Logo & Identity -->
+    <div class="header-left">
+      <a href="#" class="brand-badge" id="brandHomeLink" aria-label="DoseAlert Home">
+        <div class="logo-glow-wrapper">
+          <img src="assets/dosealert_logo.jpg" alt="DoseAlert Logo" class="brand-logo-img" />
+        </div>
+        <div>
+          <span class="brand-title">DoseAlert</span>
+          <span class="brand-tagline-sub">Bio-Pharma Safety AI</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="header-center">
+      <nav class="header-nav-bar" role="tablist" aria-label="Primary Navigation">
+        <button type="button" class="nav-link-btn is-active" data-target="screen-welcome" role="tab">
+          <span class="nav-icon">📸</span> <span>Check Medicines</span>
+        </button>
+        <button type="button" class="nav-link-btn" data-target="screen-visits" role="tab">
+          <span class="nav-icon">👨‍⚕️</span> <span>Doctor Visits (5)</span>
+        </button>
+        <button type="button" class="nav-link-btn" data-target="screen-comparator" role="tab">
+          <span class="nav-icon">🔬</span> <span>Composition Risk</span>
+        </button>
+        <button type="button" class="nav-link-btn" data-target="screen-doctor" role="tab">
+          <span class="nav-icon">🩺</span> <span>Doctor Review</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <!-- 23 Language Dropdown Option -->
+      <div class="lang-dropdown-container">
+        <select id="headerLanguageSelect" class="header-lang-select" aria-label="Select Language (23 Languages)">
+          <!-- Populated dynamically with 23 languages -->
+        </select>
+        <span class="lang-select-arrow">▼</span>
+      </div>
+
+      <!-- OCR Benchmark Report Button -->
+      <button type="button" class="benchmark-btn" id="headerBenchmarkBtn" title="OCR Accuracy Benchmark Report" aria-label="View OCR Benchmark">
+        📊
+      </button>
+
+      <!-- Help / Privacy / Disclaimer -->
+      <button type="button" class="help-icon-btn" id="headerHelpBtn" title="How it works & safety disclaimer" aria-label="Help and disclaimer">
+        ?
+      </button>
+    </div>
+  </header>
+
+  <!-- 3-Step Flow Progress Indicator (Patient Flow) -->
+  <nav class="flow-progress-bar" id="flowProgressBar" aria-label="Checking progress">
+    <div class="progress-step is-active" id="step-scan">
+      <div class="step-num-circle">1</div>
+      <span>Scan Prescriptions</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="progress-step" id="step-confirm">
+      <div class="step-num-circle">2</div>
+      <span>Verify Medicines</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="progress-step" id="step-results">
+      <div class="step-num-circle">3</div>
+      <span>Clinical Results</span>
+    </div>
+  </nav>
+
+  <!-- Main View Container -->
+  <main class="app-main" id="mainContent" role="main">
+
+    <!-- ==================== S1. WELCOME & LANGUAGE SCREEN ==================== -->
+    <section class="screen-view is-active" id="screen-welcome" aria-labelledby="welcomePromise">
+      <div class="welcome-card hero-glass-card">
+        
+        <!-- Animated Hero Top Badge -->
+        <div class="welcome-badge-glow">
+          <span class="pulse-dot"></span>
+          <span>Healthcare Track 01 • Bio-Pharma Safety MVP</span>
+        </div>
+
+        <div class="hero-logo-frame">
+          <img src="assets/dosealert_logo.jpg" alt="DoseAlert Official Logo" class="welcome-hero-logo" />
+        </div>
+        
+        <h1 class="welcome-title">DoseAlert</h1>
+        <p class="welcome-promise" id="welcomePromise" data-i18n="promise">
+          अपनी सभी दवाएं एक साथ जांचें। अपनी भाषा में।
+        </p>
+
+        <!-- Feature Pills Bar -->
+        <div class="hero-feature-pills">
+          <span class="feature-pill">⚡ Real OCR Vision</span>
+          <span class="feature-pill">🕸️ Knowledge Graph</span>
+          <span class="feature-pill">🗣️ 23+ Languages Audio</span>
+          <span class="feature-pill">🏥 5-Doctor Timeline</span>
+        </div>
+
+        <!-- 4 Featured Regional Language Cards -->
+        <div class="language-grid" role="radiogroup" aria-label="Quick language selection">
+          <div class="language-card is-selected" data-lang="hi" role="radio" aria-checked="true" tabindex="0">
+            <span class="lang-native-name">हिन्दी</span>
+            <span class="lang-en-name">Hindi</span>
+            <span class="lang-check-icon">✓</span>
+          </div>
+          <div class="language-card" data-lang="bn" role="radio" aria-checked="false" tabindex="0">
+            <span class="lang-native-name">বাংলা</span>
+            <span class="lang-en-name">Bengali</span>
+            <span class="lang-check-icon">✓</span>
+          </div>
+          <div class="language-card" data-lang="ta" role="radio" aria-checked="false" tabindex="0">
+            <span class="lang-native-name">தமிழ்</span>
+            <span class="lang-en-name">Tamil</span>
+            <span class="lang-check-icon">✓</span>
+          </div>
+          <div class="language-card" data-lang="en" role="radio" aria-checked="false" tabindex="0">
+            <span class="lang-native-name">English</span>
+            <span class="lang-en-name">English</span>
+            <span class="lang-check-icon">✓</span>
+          </div>
+        </div>
+
+        <!-- Primary CTA: Scan Prescription -->
+        <button type="button" class="btn-primary btn-glow" id="btnWelcomeScan">
+          <span class="btn-icon">📸</span> <span data-i18n="scanCta">पर्चा स्कैन करें (Add Prescription Photos)</span>
+        </button>
+
+        <!-- 1-Click Fast Demo CTA -->
+        <button type="button" class="btn-secondary" id="btnWelcomeSample">
+          <span class="btn-icon">⚡</span> <span data-i18n="sampleCta">नमूना पर्चे से आज़माएँ (5 Doctors Demo)</span>
+        </button>
+
+        <!-- Privacy Assurance -->
+        <div class="welcome-privacy-note">
+          <span class="shield-icon">🔒</span> <span data-i18n="privacyNote">जाँच पूरी होते ही पर्चे की फ़ोटो मिटा दी जाती है। हम आपका नाम या फ़ोन नंबर नहीं पूछते।</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== S2. SCAN PRESCRIPTION SCREEN (MULTI-RX) ==================== -->
+    <section class="screen-view" id="screen-scan" aria-label="Scan Prescription">
+      <div id="cameraCaptureMount">
+        <!-- Rendered dynamically by CameraCapture component -->
+      </div>
+
+      <div style="margin-top: 18px;">
+        <button type="button" class="btn-primary btn-glow" id="btnStartReading">
+          <span>🔍</span> Read & Analyze Prescription Photos
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== DOCTOR VISITS DASHBOARD SCREEN ==================== -->
+    <section class="screen-view" id="screen-visits" aria-label="Doctor Visits Dashboard">
+      <div id="visitsDashboardMount">
+        <!-- Rendered dynamically by DoctorVisitsDashboard component -->
+      </div>
+    </section>
+
+    <!-- ==================== COMPOSITION RISK COMPARATOR SCREEN ==================== -->
+    <section class="screen-view" id="screen-comparator" aria-label="Composition Risk Comparator">
+      <div id="compositionComparatorMount">
+        <!-- Rendered dynamically by CompositionComparator component -->
+      </div>
+    </section>
+
+    <!-- ==================== S3. READING (PROCESSING) SCREEN ==================== -->
+    <section class="screen-view" id="screen-reading" aria-label="Reading Prescription Progress">
+      <div class="reading-container cyber-reading-card">
+        
+        <!-- Cyber-Medical HUD Overlay -->
+        <div class="scan-laser-viewport">
+          <img src="assets/prescriptions/sample_rx_preview.svg" id="readingRxPreview" alt="Scanning Prescription" />
+          <div class="hud-corner top-left"></div>
+          <div class="hud-corner top-right"></div>
+          <div class="hud-corner bottom-left"></div>
+          <div class="hud-corner bottom-right"></div>
+          <div class="hud-grid-overlay"></div>
+          
+          <!-- Animated Laser Beam with Cyan Flare -->
+          <div class="scan-laser-line"></div>
+          
+          <div class="hud-telemetry-strip">
+            <span class="telemetry-item">OCR: ACTIVE</span>
+            <span class="telemetry-item">RESOLVING 350+ FORMULARY</span>
+            <span class="telemetry-item">PAIRWISE DDI ENGINE READY</span>
+          </div>
+        </div>
+
+        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 6px;" data-i18n="reading.title">
+          आपका पर्चा पढ़ा जा रहा है…
+        </h2>
+        <p class="reading-time-hint" data-i18n="reading.timeHint">
+          लगभग 8-10 सेकंड का समय लगता है
+        </p>
+
+        <div class="reading-step-list">
+          <div class="reading-step-item is-active" id="ocrStep1">
+            <span class="step-icon-indicator">🔄</span>
+            <span class="step-desc-text" data-i18n="reading.step1">डॉक्टर की लिखावट पढ़ना (Tesseract OCR Engine)</span>
+          </div>
+          <div class="reading-step-item" id="ocrStep2">
+            <span class="step-icon-indicator">⏳</span>
+            <span class="step-desc-text" data-i18n="reading.step2">दवाओं और ब्रांड नामों की पहचान</span>
+          </div>
+          <div class="reading-step-item" id="ocrStep3">
+            <span class="step-icon-indicator">⏳</span>
+            <span class="step-desc-text" data-i18n="reading.step3">दवा के मूल तत्वों (जेनेरिक) का मिलान</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== S4. CONFIRM MEDICINES SCREEN ==================== -->
+    <section class="screen-view" id="screen-confirm" aria-label="Confirm Detected Medicines">
+      <div class="confirm-header-banner">
+        <h2 class="confirm-title" id="confirmTitleText">
+          हमें दवाएं मिलीं। क्या यह सही हैं?
+        </h2>
+        <p class="confirm-sub" data-i18n="confirm.subtitle">
+          सुरक्षा जाँच शुरू करने से पहले कृपया दवाओं की पुष्टि कर लें।
+        </p>
+      </div>
+
+      <!-- Instant Live Search & Add Medicine Bar across 350+ Drugs -->
+      <div class="instant-search-box-card">
+        <label for="confirmDrugSearchInput" class="search-box-label">
+          <span>🔍</span> Add or search any medicine (Brand or Generic active ingredient):
+        </label>
+        <div class="search-input-field-wrapper">
+          <input type="text" id="confirmDrugSearchInput" class="instant-search-input" placeholder="Type medicine name (e.g., Telma, Dolo, Augmentin, Omez, Metformin, Brufen)..." autocomplete="off" />
+          <button type="button" class="btn-clear-search is-hidden" id="btnClearSearch">✕</button>
+        </div>
+        <div class="search-results-dropdown is-hidden" id="confirmSearchDropdown"></div>
+      </div>
+
+      <!-- Quick Polypharmacy Prescription Presets -->
+      <div class="quick-preset-rx-bar">
+        <span class="preset-title">Quick Add Preset Prescriptions:</span>
+        <button type="button" class="btn-quick-preset" data-preset="cardio">Cardio Rx (Ecosprin + Warf)</button>
+        <button type="button" class="btn-quick-preset" data-preset="ortho">Ortho Rx (Brufen + Pan 40)</button>
+        <button type="button" class="btn-quick-preset" data-preset="pulmo">Pulmono Rx (Claribid)</button>
+        <button type="button" class="btn-quick-preset" data-preset="diab">Diabetic Rx (Glycomet)</button>
+      </div>
+
+      <!-- Medicine verification cards container -->
+      <div id="confirmListContainer"></div>
+
+      <div style="margin: 20px 0 14px 0;">
+        <button type="button" class="btn-secondary" id="btnAddAnotherRx">
+          <span>➕</span> <span data-i18n="confirm.addAnotherRx">दूसरे डॉक्टर का पर्चा जोड़ें (Multi-Rx Merge)</span>
+        </button>
+      </div>
+
+      <button type="button" class="btn-primary btn-glow" id="btnConfirmCheck" style="margin-top: 8px;">
+        <span>🛡️</span> <span data-i18n="confirm.checkButton">हाँ, इन दवाओं की सुरक्षा जाँचें</span>
+      </button>
+    </section>
+
+    <!-- ==================== S5. RESULTS SCREEN (ALERTS & FOOD) ==================== -->
+    <section class="screen-view" id="screen-results" aria-label="Interaction Safety Results">
+      
+      <!-- Summary Result Banner -->
+      <div class="summary-banner" id="resultsSummaryBanner">
+        <div>
+          <h2 class="summary-banner-title" id="summaryBannerTitle">2 महत्वपूर्ण चेतावनियां मिलीं</h2>
+          <p class="summary-banner-sub" id="summaryBannerSub">1 वर्जित मेल • 1 गंभीर चेतावनी</p>
+        </div>
+        <div class="summary-banner-icon">⚠️</div>
+      </div>
+
+      <!-- CORE "WOW" FEATURE: The Interaction Map -->
+      <div class="interaction-map-card">
+        <div class="map-card-header">
+          <div class="map-title">
+            <span>🕸️</span> <span data-i18n="results.interactionMapTitle">दवाओं का आपसी संबंध नक्शा</span>
+          </div>
+          <span class="interactive-graph-badge">
+            ⚡ Interactive Neural Graph
+          </span>
+        </div>
+        <div class="map-canvas-container" id="interactionMapCanvasMount"></div>
+        <p style="font-size: 13px; color: #64748B; margin-top: 8px; text-align: center;" data-i18n="results.mapHint">
+          दवाओं के बीच संबंध और असर देखने के लिए किसी भी दवा या रेखा को टैप करें।
+        </p>
+      </div>
+
+      <!-- Results Tabs: Warnings vs Food -->
+      <div class="results-tabs" role="tablist">
+        <button type="button" class="tab-btn is-active" id="tabBtnWarnings" role="tab" aria-selected="true">
+          ⚠️ <span data-i18n="results.tabWarnings">दवा चेतावनियाँ</span>
+        </button>
+        <button type="button" class="tab-btn" id="tabBtnFood" role="tab" aria-selected="false">
+          🥗 <span data-i18n="results.tabFood">खान-पान और परहेज</span>
+        </button>
+      </div>
+
+      <div id="alertCardsListMount"></div>
+      <div id="foodCardsListMount" style="display: none;"></div>
+      <div id="notCheckedMount"></div>
+
+      <!-- Legal & Medical Disclaimer Footer -->
+      <footer class="app-footer">
+        <p data-i18n="disclaimerShort">
+          डोज़अलर्ट केवल जानकारी के लिए है और डॉक्टर की सलाह का विकल्प नहीं है। बिना डॉक्टर की सलाह के कोई दवा शुरू, बंद या न बदलें।
+        </p>
+        <div class="footer-links-row">
+          <button type="button" class="btn-text-link" id="btnStartOver">
+            🔄 <span data-i18n="results.startOver">नया पर्चा जांचें</span>
+          </button>
+          <button type="button" class="btn-text-link" id="btnOpenGraphExplorer">
+            🌐 Inspect Full Graph Explorer
+          </button>
+        </div>
+      </footer>
+
+      <div id="graphExplorerMount"></div>
+    </section>
+
+    <!-- ==================== S7. DOCTOR CLINICAL SUMMARY VIEW ==================== -->
+    <section class="screen-view" id="screen-doctor" aria-label="Clinical Doctor Summary View">
+      <div class="doctor-view-container">
+        
+        <div class="doctor-header-card">
+          <div class="doctor-header-badge">
+            🩺 <span>For Clinician Review Only</span>
+          </div>
+          <h1 class="doctor-header-title" data-i18n="doctor.headerTitle">
+            Clinical Medication Interaction Summary
+          </h1>
+          <p class="doctor-header-sub" data-i18n="doctor.subTitle">
+            Consolidated polypharmacy safety report for prescribing clinician review
+          </p>
+          <div class="doctor-meta-strip">
+            <span class="doctor-meta-item" id="docPatientMetaLine">
+              Patient: Ramesh Chander (68M) • Active Prescriptions: 5 Prescribers
+            </span>
+          </div>
+        </div>
+
+        <div class="doctor-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-value" id="docTotalMedsCount">6</div>
+            <div class="metric-label" data-i18n="doctor.totalMeds">Active Agents</div>
+          </div>
+          <div class="metric-card alert-metric">
+            <div class="metric-value" id="docMajorCount">2</div>
+            <div class="metric-label" data-i18n="doctor.majorWarnings">Major / Contraindicated</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="docModCount">1</div>
+            <div class="metric-label" data-i18n="doctor.moderateWarnings">Moderate Warnings</div>
+          </div>
+        </div>
+
+        <div class="clinical-section-card">
+          <div class="clinical-section-title">
+            <span>📋 Combined Medication Regimen (Across All Prescribers)</span>
+          </div>
+          <div class="clinical-table-wrapper">
+            <table class="clinical-table" aria-label="Reconciled Medication Table">
+              <thead>
+                <tr>
+                  <th data-i18n="doctor.tableGeneric">Generic Ingredient</th>
+                  <th data-i18n="doctor.tableBrand">Brand Name Read</th>
+                  <th data-i18n="doctor.tableCode">RxNorm / ATC Code</th>
+                  <th data-i18n="doctor.tablePrescriber">Prescriber Source</th>
+                  <th data-i18n="doctor.tableStatus">Confidence</th>
+                </tr>
+              </thead>
+              <tbody id="docMedicationTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="clinical-section-card">
+          <div class="clinical-section-title">
+            <span>⚠️ Severity-Ranked Drug-Drug Interactions</span>
+          </div>
+          <div id="docFindingsMount"></div>
+        </div>
+
+        <div class="alternatives-panel">
+          <div class="alternatives-header">
+            <span>💡</span> <span data-i18n="doctor.alternativesLabel">Evidence-Based Safer Alternatives (For Review)</span>
+          </div>
+          <div id="docAlternativesMount"></div>
+        </div>
+
+        <div class="doctor-actions-row">
+          <button type="button" class="btn-print-pdf" id="btnPrintClinicalPdf">
+            <span>🖨️</span> <span data-i18n="doctor.printPdf">Print / Save as PDF</span>
+          </button>
+          <button type="button" class="btn-secondary" id="btnBackToPatient" style="flex: 1;">
+            <span>👤</span> <span data-i18n="doctor.backToPatient">Back to Patient View</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== STICKY BOTTOM ACTION BAR (RESULTS SCREEN) ==================== -->
+  <aside class="sticky-action-bar" id="stickyActionBar" style="display: none;" aria-label="Primary audio and share actions">
+    <div class="sticky-action-inner">
+      <button type="button" class="btn-primary btn-glow" id="btnListenAllVoice" style="flex: 1.4; border-radius: 9999px;">
+        <span>🔊</span> <span data-i18n="results.listenAll">चेतावनियां सुनें (आवाज़ में)</span>
+      </button>
+
+      <button type="button" class="btn-secondary" id="btnShowDoctor" style="flex: 1; border-radius: 9999px;">
+        <span>🩺</span> <span data-i18n="results.showDoctor">डॉक्टर को दिखाएं</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==================== BOTTOM SHEETS / MODALS ==================== -->
+
+  <!-- S6 Alert Detail Bottom Sheet -->
+  <div class="bottom-sheet-overlay" id="alertDetailSheet" role="dialog" aria-modal="true" aria-labelledby="alertSheetTitle">
+    <div class="sheet-backdrop" data-sheet-close></div>
+    <div class="sheet-surface">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header-row">
+        <h3 class="sheet-header-title" id="alertSheetTitle">Alert Details</h3>
+        <button type="button" class="sheet-close-btn" data-sheet-close aria-label="Close modal">✕</button>
+      </div>
+      <div class="sheet-content-body"></div>
+    </div>
+  </div>
+
+  <!-- Help & Safety Modal Sheet -->
+  <div class="bottom-sheet-overlay" id="helpModalSheet" role="dialog" aria-modal="true" aria-labelledby="helpSheetTitle">
+    <div class="sheet-backdrop" data-sheet-close></div>
+    <div class="sheet-surface">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header-row">
+        <h3 class="sheet-header-title" id="helpSheetTitle">Help & Safety Guidelines</h3>
+        <button type="button" class="sheet-close-btn" data-sheet-close aria-label="Close modal">✕</button>
+      </div>
+      <div class="sheet-content-body"></div>
+    </div>
+  </div>
+
+  <!-- Add Doctor Visit Modal Sheet -->
+  <div class="bottom-sheet-overlay" id="addVisitModalSheet" role="dialog" aria-modal="true" aria-labelledby="addVisitSheetTitle">
+    <div class="sheet-backdrop" data-sheet-close></div>
+    <div class="sheet-surface">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header-row">
+        <h3 class="sheet-header-title" id="addVisitSheetTitle">Add Doctor Visit & Prescription</h3>
+        <button type="button" class="sheet-close-btn" data-sheet-close aria-label="Close modal">✕</button>
+      </div>
+      <div class="sheet-content-body"></div>
+    </div>
+  </div>
+
+  <!-- OCR Benchmark Report Modal Sheet -->
+  <div class="bottom-sheet-overlay" id="benchmarkModalSheet" role="dialog" aria-modal="true" aria-labelledby="benchSheetTitle">
+    <div class="sheet-backdrop" data-sheet-close></div>
+    <div class="sheet-surface">
+      <div class="sheet-drag-handle"></div>
+      <div class="sheet-header-row">
+        <h3 class="sheet-header-title" id="benchSheetTitle">OCR Accuracy Benchmark</h3>
+        <button type="button" class="sheet-close-btn" data-sheet-close aria-label="Close modal">✕</button>
+      </div>
+      <div class="sheet-content-body"></div>
+    </div>
+  </div>
+
+  <!-- Main ES Module Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

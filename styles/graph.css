@@ -1,0 +1,228 @@
+/* DoseAlert - Interactive SVG Knowledge Graph & Explorer Stylesheet */
+
+.interaction-map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 1. Animated Link Drawing */
+@keyframes drawPath {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeInMarker {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes popNode {
+  from { opacity: 0; transform: scale(0.65); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Pulsing on Contraindicated Links */
+.pulse-link path {
+  animation: drawPath 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards, pulseStroke 2s infinite ease-in-out 0.8s !important;
+}
+
+@keyframes pulseStroke {
+  0% { stroke-width: 4px; opacity: 0.9; }
+  50% { stroke-width: 6.5px; opacity: 1; filter: drop-shadow(0 0 6px #7F1D1D); }
+  100% { stroke-width: 4px; opacity: 0.9; }
+}
+
+/* Interactive Node Pills */
+.graph-node-pill {
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+
+.graph-node-pill:hover {
+  transform: translateY(-2px);
+}
+
+.graph-node-pill.is-active .pill-surface {
+  stroke-width: 3.5px !important;
+  stroke: var(--color-primary-dark) !important;
+  fill: #F0FDFA !important;
+}
+
+.graph-edge {
+  cursor: pointer;
+}
+
+.graph-edge.is-active .edge-path {
+  stroke-width: 5px !important;
+}
+
+/* 2. S8 GRAPH EXPLORER STYLING */
+.explorer-card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-top: 24px;
+}
+
+.explorer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding-bottom: 12px;
+}
+
+.explorer-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.explorer-subtitle {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.explorer-select {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+}
+
+.explorer-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .explorer-layout {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+.explorer-graph-area {
+  background-color: #F8FAFC;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.explorer-detail-panel {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  padding: 16px;
+  min-height: 380px;
+}
+
+.panel-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-muted);
+  text-align: center;
+  font-size: 14px;
+  padding: 24px;
+}
+
+.panel-empty-state .icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.panel-card .panel-tag {
+  display: inline-block;
+  background-color: #F1F5F9;
+  color: #475569;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.panel-card .panel-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: 10px;
+}
+
+.code-chips {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.code-chips .chip {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.panel-section {
+  margin-bottom: 14px;
+  font-size: 14.5px;
+}
+
+.panel-section strong {
+  display: block;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.explorer-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-item .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.drug-dot { background-color: #0F766E; }
+.brand-dot { background-color: #0284C7; }
+.food-dot { background-color: #F59E0B; }
+
+.legend-item .line {
+  width: 16px;
+  height: 3px;
+}
+.contra-line { background-color: #7F1D1D; }
+.major-line { background-color: #B91C1C; }
+.mod-line { background-color: #B45309; }
